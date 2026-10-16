@@ -1,99 +1,38 @@
 # SSDLC Plan — Gym Management System
 
-## 1. Requirements Phase
+## 1. Requirements
+Build a simple gym booking system where users can log in, view classes, make bookings, and view their own bookings. Admins can create classes.
 
-### Purpose
-Build a small gym class booking system that protects users' bookings
-and supports class management by an administrator.
+The system has three separate Python services:
+- **API Service:** Handles login and user requests.
+- **Gym Service:** Manages classes and bookings.
+- **Processing Service:** Creates booking summaries using my own helper package.
 
-### Functional Requirements
-- Users can authenticate.
-- Members can view gym classes.
-- Members can create and view their own bookings.
-- Administrators can create gym classes.
-- Users cannot access another member's private bookings.
-- The system can generate booking summaries.
+The services communicate through HTTP.
 
-### Components
-1. API Service: authenticates users and coordinates requests.
-2. Gym Service: manages classes and bookings and enforces permissions.
-3. Processing Service: generates booking summaries using a separate helper package.
+**Assets:** User accounts, passwords, tokens, bookings, admin permissions, and dependencies.
 
-The three services will run as separate processes and communicate
-through HTTP APIs.
+**Main threats:** Unauthorized access, invalid input, SQL injection, service communication problems, and vulnerable dependencies.
 
-### Assets
-- User credentials and authentication tokens.
-- Private booking records.
-- Gym class information.
-- Administrator privileges.
-- Helper package and installed dependencies.
+**Access control:** Members can manage their own bookings. Only admins can create classes. Users cannot access other members' bookings.
 
-### Main Threats and Controls
-- Unauthorized access: verify identity, ownership, and permissions.
-- Invalid input: validate request data.
-- SQL injection: use parameterized database queries.
-- Cross-service authorization failures: independently verify authority
-  at protected service boundaries.
-- Untrusted dependencies: pin and review dependencies.
+**STRIDE:** I will consider spoofing, tampering, repudiation, information disclosure, denial of service, and elevation of privilege.
 
-### Security Principles
-- Least privilege.
-- Complete mediation.
-- Fail-safe defaults.
+## 2. Implementation and Build
+Build the services, create and separately install the helper package, use password hashing, and run static and dependency checks.
 
-## 2. Implementation and Build Phase
+**Gate:** All services start successfully and dependencies are checked.
 
-- Implement three independent Python services.
-- Define explicit HTTP interfaces between services.
-- Create a separately installable helper package.
-- Use established libraries for password hashing and authentication.
-- Keep dependencies declared and pinned.
-- Run static analysis and dependency vulnerability checks.
-- Document build and run commands.
+## 3. Testing
+Create two member accounts and one admin account. Test the features, demonstrate three course vulnerabilities and one vulnerability caused by the services working together, then fix them and test the fixes.
 
-Gate: all services build and start successfully; unexpected dependencies
-are investigated and rejected.
+**Gate:** Required functionality works and security tests pass.
 
-## 3. Testing Phase
-
-- Seed two ordinary users and one administrator.
-- Test normal booking and class-management functionality.
-- Test that one member cannot access another member's bookings.
-- Demonstrate three vulnerabilities selected from the course catalogue.
-- Demonstrate one additional vulnerability caused by service composition.
-- Preserve evidence of vulnerable behavior and its remediation.
-- Test the final security controls with regression tests.
-- Save functional, authorization, and security analysis results.
-
-Gate: required functional and security tests pass, and confirmed
-security violations are fixed.
-
-## 4. Release, Deployment and Operation Phase
-
-For a production release, the system would require:
-- Secure secret and credential management.
-- HTTPS and restricted network access.
-- Hardened service and database permissions.
-- Dependency updates and vulnerability monitoring.
-- Centralized security logging and monitoring.
-- Backup, recovery, and incident-response procedures.
-
-Gate: production deployment would require a separate security review.
+## 4. Release and Operation
+This is a local security project, not a production system. A real deployment would also need HTTPS, secure secrets, monitoring, backups, and regular dependency updates.
 
 ## 5. CI/CD
+Jenkins will run on pushes and pull requests. It will build the application, run static and dependency checks, execute tests, and save reports. Required test failures and release-blocking security findings will fail the pipeline.
 
-Jenkins will validate builds, run static and dependency analysis,
-start a fresh test environment, execute functional and authorization
-tests, and save reports as build artifacts.
-
-The pipeline will fail if required tests fail or if findings meet
-the documented release-blocking criteria.
-
-## 6. Evidence and Traceability
-
-Security requirements will be linked to implementation decisions,
-automated tests, Git commits, and Jenkins reports.
-
-This plan will be committed before feature implementation and updated
-when justified by new findings.
+## 6. Evidence
+I will use Git commits, test results, security reports, and Jenkins results to show what I implemented and how I fixed the vulnerabilities.
