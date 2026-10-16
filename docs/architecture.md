@@ -37,14 +37,14 @@ The three services run as separate processes. The database and helper package ar
 
 ```mermaid
 flowchart TD
-    A["User enters username<br/>and password"]
-    B["API Service checks<br/>credentials"]
+    A["User enters<br/>username and password"]
+    B["API Service<br/>checks credentials"]
     C{"Credentials<br/>valid?"}
     D["Issue JWT token"]
     E["Reject login"]
-    F["User sends request<br/>with token"]
-    G["Service validates token<br/>and checks permissions"]
-    H["Return requested data"]
+    F["User sends<br/>request with token"]
+    G["Service validates token<br/>and checks<br/>permissions"]
+    H["Return requested<br/>adata"]
     I["Reject request"]
 
     A --> B
