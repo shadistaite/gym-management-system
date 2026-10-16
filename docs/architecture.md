@@ -17,11 +17,11 @@ The helper package will be installed separately and used by the Processing Servi
 ```mermaid
 flowchart TD
     U["User"]
-    A["API Service"]
-    G["Gym Service"]
-    P["Processing Service"]
+    A["API<br/>Service"]
+    G["Gym<br/>Service"]
+    P["Processing<br/>Service"]
     D[("Database")]
-    H["gym-summary-utils"]
+    H["gym-summary-<br/>utils"]
 
     U -->|HTTP requests with JWT| A
     A -->|HTTP requests| G
@@ -29,13 +29,6 @@ flowchart TD
     G --> D
     P -->|Request booking data| G
     P --> H
-
-    style U padding:20px
-    style A padding:30px
-    style G padding:30px
-    style P padding:30px
-    style D padding:20px
-    style H padding:20px
 ```
 
 The three services run as separate processes. The database and helper package are not counted as application components.
@@ -45,11 +38,11 @@ The three services run as separate processes. The database and helper package ar
 ```mermaid
 flowchart TD
     A["User enters username<br/>and password"]
-    B["API Service checks credentials"]
-    C{"Credentials valid?"}
+    B["API Service checks<br/>credentials"]
+    C{"Credentials<br/>valid?"}
     D["Issue JWT token"]
     E["Reject login"]
-    F["User sends request with token"]
+    F["User sends request<br/>with token"]
     G["Service validates token<br/>and checks permissions"]
     H["Return requested data"]
     I["Reject request"]
@@ -62,16 +55,6 @@ flowchart TD
     F --> G
     G -->|Authorized| H
     G -->|Not authorized| I
-
-    style A padding:20px
-    style B padding:30px
-    style C padding:25px
-    style D padding:25px
-    style E padding:25px
-    style F padding:30px
-    style G padding:35px
-    style H padding:25px
-    style I padding:25px
 ```
 
 After logging in, the user receives a JWT token. Later requests include this token. The relevant service must validate the token and check the user's permissions before allowing access.
