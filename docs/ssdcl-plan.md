@@ -18,6 +18,8 @@ The services communicate through HTTP.
 
 **STRIDE:** I will consider spoofing, tampering, repudiation, information disclosure, denial of service, and elevation of privilege.
 
+**Security documents:** The architecture document describes the components and trust boundaries. The asset register lists important assets and their protection. A separate threat model will document STRIDE threats, the access-control matrix, security controls, and tests.
+
 ## 2. Implementation and Build
 Build the services, create and separately install the helper package, use password hashing, and run static and dependency checks.
 

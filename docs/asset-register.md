@@ -1,10 +1,10 @@
 # Asset Register
 
-| Asset | Why it matters | Protection |
-|---|---|---|
-| User passwords | Prevent account theft | Password hashing |
-| JWT tokens | Prevent account impersonation | Token validation |
-| Booking data | Protect user privacy | Authorization checks |
-| Admin account | Prevent unauthorized administration | Role checks |
-| Database | Protect stored information | Parameterized queries |
-| Helper package | Avoid vulnerable dependencies | Dependency scanning |
+| Asset | Main threat | Protection | Test evidence |
+|---|---|---|---|
+| User passwords | Account theft | Password hashing | Test login with correct and incorrect passwords |
+| JWT tokens | Account impersonation | Token validation | Test missing and invalid tokens |
+| Booking data | Unauthorized access | Authorization checks | Test that users cannot view other users' bookings |
+| Admin account | Unauthorized administration | Role checks | Test that members cannot create classes |
+| Database | SQL injection | Parameterized queries | Run SQL injection tests |
+| Helper package | Vulnerable dependency | Dependency scanning | Save dependency scan results |
