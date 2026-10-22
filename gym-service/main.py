@@ -36,7 +36,14 @@ def get_current_user(
         username = payload.get("sub")
         role = payload.get("role")
 
-        if not username or role not in {"member", "admin"}:
+        # Only accept known users with their assigned roles.
+        trusted_users = {
+            "alice": "member",
+            "bob": "member",
+            "admin": "admin",
+        }
+
+        if not username or trusted_users.get(username) != role:
             raise HTTPException(
                 status_code=401,
                 detail="Invalid token",
@@ -52,7 +59,6 @@ def get_current_user(
             status_code=401,
             detail="Invalid or expired token",
         )
-
 
 def get_db():
     connection = sqlite3.connect(DATABASE)

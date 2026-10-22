@@ -197,7 +197,7 @@ def create_class(
         "POST",
         f"{GYM_SERVICE_URL}/classes",
         current_user["token"],
-        json_body=request.dict(),
+        json_body=request.model_dump(),
     )
 
 
@@ -210,7 +210,7 @@ def create_booking(
         "POST",
         f"{GYM_SERVICE_URL}/bookings",
         current_user["token"],
-        json_body=request.dict(),
+        json_body=request.model_dump(),
     )
 
 
