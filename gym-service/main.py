@@ -1,10 +1,57 @@
+import os
 import sqlite3
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Header, HTTPException
+import jwt
+from fastapi import Depends, FastAPI, HTTPException
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, Field
 
 DATABASE = "gym.db"
+
+SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+
+if not SECRET_KEY:
+    raise RuntimeError(
+        "JWT_SECRET_KEY environment variable must be set"
+    )
+
+ALGORITHM = "HS256"
+
+bearer_scheme = HTTPBearer()
+
+
+def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+):
+    token = credentials.credentials
+
+    try:
+        payload = jwt.decode(
+            token,
+            SECRET_KEY,
+            algorithms=[ALGORITHM],
+        )
+
+        username = payload.get("sub")
+        role = payload.get("role")
+
+        if not username or role not in {"member", "admin"}:
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid token",
+            )
+
+        return {
+            "username": username,
+            "role": role,
+        }
+
+    except jwt.InvalidTokenError:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid or expired token",
+        )
 
 
 def get_db():
@@ -73,7 +120,9 @@ def health():
 
 
 @app.get("/classes")
-def list_classes():
+def list_classes(
+    current_user: dict = Depends(get_current_user),
+):
     with get_db() as db:
         rows = db.execute(
             """
@@ -89,11 +138,9 @@ def list_classes():
 @app.post("/classes")
 def create_class(
     request: ClassRequest,
-    x_username: str = Header(),
-    x_role: str = Header(),
+    current_user: dict = Depends(get_current_user),
 ):
-    # Temporary authorization for local development.
-    if x_role != "admin":
+    if current_user["role"] != "admin":
         raise HTTPException(
             status_code=403,
             detail="Admin access required",
@@ -117,8 +164,10 @@ def create_class(
 @app.post("/bookings")
 def create_booking(
     request: BookingRequest,
-    x_username: str = Header(),
+    current_user: dict = Depends(get_current_user),
 ):
+    username = current_user["username"]
+
     with get_db() as db:
         gym_class = db.execute(
             "SELECT id, capacity FROM classes WHERE id = ?",
@@ -147,7 +196,7 @@ def create_booking(
             SELECT id FROM bookings
             WHERE username = ? AND class_id = ?
             """,
-            (x_username, request.class_id),
+            (username, request.class_id),
         ).fetchone()
 
         if existing:
@@ -161,7 +210,7 @@ def create_booking(
             INSERT INTO bookings (username, class_id)
             VALUES (?, ?)
             """,
-            (x_username, request.class_id),
+            (username, request.class_id),
         )
 
     return {
@@ -173,9 +222,9 @@ def create_booking(
 @app.get("/bookings/{username}")
 def list_bookings(
     username: str,
-    x_username: str = Header(),
+    current_user: dict = Depends(get_current_user),
 ):
-    if username != x_username:
+    if username != current_user["username"]:
         raise HTTPException(
             status_code=403,
             detail="Access denied",
