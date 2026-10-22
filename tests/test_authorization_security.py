@@ -5,7 +5,6 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-
 TEST_SECRET = "automated-test-secret-not-for-production"
 os.environ["JWT_SECRET_KEY"] = TEST_SECRET
 

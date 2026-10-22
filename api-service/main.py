@@ -1,13 +1,12 @@
 import os
-from datetime import datetime, timedelta, timezone
-from typing import Optional
+from datetime import UTC, datetime, timedelta
 
 import httpx
 import jwt
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from pydantic import BaseModel, Field
 from pwdlib import PasswordHash
+from pydantic import BaseModel, Field
 
 app = FastAPI(title="Gym Management API")
 
@@ -103,7 +102,7 @@ def forward_request(
     method: str,
     url: str,
     token: str,
-    json_body: Optional[dict] = None,
+    json_body: dict | None = None,
 ):
     try:
         response = httpx.request(
@@ -153,7 +152,7 @@ def login(request: LoginRequest):
             detail="Invalid username or password",
         )
 
-    expires_at = datetime.now(timezone.utc) + timedelta(minutes=30)
+    expires_at = datetime.now(UTC) + timedelta(minutes=30)
 
     token = jwt.encode(
         {

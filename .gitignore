@@ -33,3 +33,19 @@ htmlcov/
 build/
 dist/
 *.egg-info/
+
+# Python virtual environments
+.venv/
+.venv312/
+.jenkins-venv/
+
+# Python generated files
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+coverage.xml
+
+# Local databases and secrets
+*.db
+.env
