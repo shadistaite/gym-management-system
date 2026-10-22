@@ -4,6 +4,7 @@ pipeline {
     options {
         timestamps()
         disableConcurrentBuilds()
+        buildDiscarder(logRotator(numToKeepStr: '10'))
     }
 
     environment {
@@ -15,80 +16,90 @@ pipeline {
     stages {
         stage('Build and Install Dependencies') {
             steps {
-                sh '''
-                    python3 --version
-                    python3 -m venv .jenkins-venv
-                    .jenkins-venv/bin/python -m pip install --upgrade pip
+                dir('/Users/shadi/Desktop/gym-management-system') {
+                    sh '''
+                        /opt/homebrew/bin/python3.12 --version
 
-                    .jenkins-venv/bin/python -m pip install \
-                        -r api-service/requirements.txt
+                        /opt/homebrew/bin/python3.12 -m venv .jenkins-venv
 
-                    .jenkins-venv/bin/python -m pip install \
-                        -r gym-service/requirements.txt
+                        .jenkins-venv/bin/python -m pip install --upgrade pip
 
-                    .jenkins-venv/bin/python -m pip install \
-                        -r processing-service/requirements.txt
+                        .jenkins-venv/bin/python -m pip install \
+                            -r api-service/requirements.txt
 
-                    .jenkins-venv/bin/python -m pip install -e ./gym-summary-utils
+                        .jenkins-venv/bin/python -m pip install \
+                            -r gym-service/requirements.txt
 
-                    .jenkins-venv/bin/python -m pip install \
-                        pytest pytest-cov ruff pip-audit
-                '''
+                        .jenkins-venv/bin/python -m pip install \
+                            -r processing-service/requirements.txt
+
+                        .jenkins-venv/bin/python -m pip install -e ./gym-summary-utils
+
+                        .jenkins-venv/bin/python -m pip install \
+                            pytest pytest-cov ruff pip-audit
+                    '''
+                }
             }
         }
 
         stage('Static Analysis') {
             steps {
-                sh '''
-                    .jenkins-venv/bin/ruff check \
-                        api-service \
-                        gym-service \
-                        processing-service \
-                        gym-summary-utils \
-                        tests
-                '''
+                dir('/Users/shadi/Desktop/gym-management-system') {
+                    sh '''
+                        .jenkins-venv/bin/ruff check \
+                            api-service \
+                            gym-service \
+                            processing-service \
+                            gym-summary-utils \
+                            tests
+                    '''
+                }
             }
         }
 
         stage('Dependency Security Audit') {
             steps {
-                sh '''
-                    .jenkins-venv/bin/pip-audit \
-                        -r api-service/requirements.txt \
-                        -r gym-service/requirements.txt \
-                        -r processing-service/requirements.txt \
-                        --strict
-                '''
+                dir('/Users/shadi/Desktop/gym-management-system') {
+                    sh '''
+                        .jenkins-venv/bin/pip-audit \
+                            -r api-service/requirements.txt \
+                            -r gym-service/requirements.txt \
+                            -r processing-service/requirements.txt \
+                            --strict
+                    '''
+                }
             }
         }
 
         stage('Automated Security and Functional Tests') {
             steps {
-                sh '''
-                    mkdir -p reports
+                dir('/Users/shadi/Desktop/gym-management-system') {
+                    sh '''
+                        mkdir -p reports
 
-                    .jenkins-venv/bin/python -m pytest tests/ \
-                        --junitxml=reports/junit.xml \
-                        --cov=api-service \
-                        --cov=gym-service \
-                        --cov=processing-service \
-                        --cov-report=xml:reports/coverage.xml \
-                        --cov-report=term \
-                        -v
-                '''
+                        .jenkins-venv/bin/python -m pytest tests/ \
+                            --junitxml=reports/junit.xml \
+                            --cov=api-service \
+                            --cov=gym-service \
+                            --cov=processing-service \
+                            --cov-report=xml:reports/coverage.xml \
+                            --cov-report=term \
+                            -v
+                    '''
+                }
             }
         }
     }
 
     post {
         always {
-            junit testResults: 'reports/junit.xml',
-                  allowEmptyResults: true
+            dir('/Users/shadi/Desktop/gym-management-system') {
+                junit testResults: 'reports/junit.xml',
+                      allowEmptyResults: true
 
-            archiveArtifacts artifacts: 'reports/**',
-                             allowEmptyArchive: true
-
-            sh 'rm -rf .jenkins-venv'
+                archiveArtifacts artifacts: 'reports/**',
+                                 allowEmptyArchive: true
+            }
         }
 
         success {
