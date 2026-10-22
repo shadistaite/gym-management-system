@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gym-summary-utils"
+version = "0.1.0"
+description = "Helper utilities for generating gym booking summaries"
+requires-python = ">=3.9"
+
+[tool.setuptools]
+packages = ["gym_summary_utils"]
