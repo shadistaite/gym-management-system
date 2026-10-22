@@ -2,41 +2,60 @@
 
 ## Purpose
 
-This folder documents the security vulnerabilities tested in the Gym Management System, their fixes, and the automated test results.
+This folder documents the security vulnerabilities assessed in the Gym Management System, the security fixes implemented, and the automated tests used to verify the application's security.
+
+The project uses a multi-service architecture consisting of an API Service, Gym Service, and Processing Service. Each service has security responsibilities, including authentication, authorization, input validation, and token verification.
 
 ## Testing Environment
 
 | Item | Details |
 |---|---|
-| Language | Python 3.9 |
-| Framework | FastAPI |
+| Programming language | Python 3.9 |
+| Web framework | FastAPI |
 | Database | SQLite |
 | Test framework | pytest |
-| Environment | Local macOS |
+| Authentication | JWT |
+| Password hashing | Argon2 |
+| Development environment | macOS |
+| Architecture | Three separate application services |
 
 ## Vulnerability Overview
 
-| ID | Vulnerability | Component | Status |
-|---|---|---|---|
-| CWE-20 | Improper Input Validation | API Service | Input validation tests passed |
-| CWE-89 | SQL Injection | Gym Service | Four security tests passed |
-| CWE-862 | Missing Authorization | API and Gym Services | Four authorization tests passed |
-| Composition | Cross-service trust | All three services | Risk documented; dedicated test pending |
+The project addresses three catalogue vulnerabilities and one additional composition vulnerability.
+
+| ID | Vulnerability | Component | Security Measure | Verification |
+|---|---|---|---|---|
+| CWE-20 | Improper Input Validation | API Service | Validates request data and rejects invalid class capacities and inputs. | Input validation tests passed. |
+| CWE-89 | SQL Injection | Gym Service | Uses parameterized SQL queries instead of constructing queries from user input. | SQL injection security tests passed. |
+| CWE-862 | Missing Authorization | API and Gym Services | Enforces role-based access control and ownership checks. | Authorization security tests passed. |
+| Composition | Cross-service identity validation | Gym and Processing Services | Validates token usernames against a trusted user registry and checks assigned roles. | Gym Service composition regression test passed; full test suite passed. |
 
 ## Testing Process
 
-Each vulnerability was investigated before the fix was implemented to identify the problem and observe its behaviour.
+Security testing follows these steps:
 
-The testing process is:
+1. Identify the vulnerability and the affected component.
+2. Review the relevant implementation and trust boundaries.
+3. Implement or verify the security fix.
+4. Write or run automated tests for the security requirement.
+5. Record the observed test results.
+6. Update the relevant security documentation.
+7. Commit the implementation, tests, and documentation to version control.
 
-1. Test the application to identify and reproduce the vulnerability.
-2. Record the observed behaviour and identify the cause.
-3. Implement a security fix.
-4. Repeat the test to check that the problem is resolved.
-5. Add or update automated regression tests.
-6. Record the test results.
+Testing is performed in a controlled local development environment.
 
-All tests are performed in a controlled local environment.
+A vulnerability is not considered demonstrated unless a test or other recorded evidence reproduces the vulnerable behaviour. Test results in this documentation must reflect actual test executions.
+
+## Vulnerability Reports
+
+The following documents describe the security issues and their verification evidence:
+
+- `CWE-20-input-validation.md` — Improper input validation.
+- `CWE-89-sql-injection.md` — SQL injection.
+- `CWE-862-missing-authorization.md` — Missing authorization.
+- `composition-vulnerability.md` — Cross-service identity validation.
+
+Each report describes the relevant vulnerability, the security measure implemented, and the available test evidence.
 
 ## Run the Tests
 
